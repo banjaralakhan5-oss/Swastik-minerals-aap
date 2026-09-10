@@ -3,7 +3,9 @@ name: Build Swastik Minerals APK
 on:
   workflow_dispatch:
   push:
-    branches: [ "main", "master" ]
+    branches:
+      - main
+      - master
 
 jobs:
   build:
@@ -18,6 +20,10 @@ jobs:
           rm -rf project
           unzip -q Swastik_Minerals_Mobile_APK_Build.zip -d project
 
+      - name: Fix company name
+        run: |
+          sed -i 's/Swastik Minerals \& Chemical/Swastik Minerals and Chemical/g' project/app/src/main/AndroidManifest.xml
+
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
@@ -31,7 +37,8 @@ jobs:
 
       - name: Build APK
         working-directory: project
-        run: gradle --no-daemon assembleDebug
+        run: |
+          gradle --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
